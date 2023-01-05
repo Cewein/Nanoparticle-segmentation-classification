@@ -10,37 +10,6 @@ from scipy import ndimage as ndi
 import os
 
 
-def openFile(path: str, scale: int=1,invert:bool = True, display: bool=False) -> np.ndarray:
-    """Open a file with skimage and change is representation to gray scale in the range 0 to 255.
-    Please note that the inversion of the image is done by default.
-    """
-    #open the image and rescale it
-    im = plt.imread(path)
-    im = sk.transform.resize(im, (im.shape[0]/scale,im.shape[1]/scale))
-
-    #perform RGBA to RGB to Gray
-    #or if image is RGB, change it to gray directly
-    if(im.shape[2] > 3):
-        im = 255*sk.color.rgb2gray(sk.color.rgba2rgb(im))
-    else:
-         im = 255*sk.color.rgb2gray(im)
-
-    #invert the image if important element are dark in the image
-    #since nanoparticles are often dark this is true by default
-    if invert:
-        im = 255 - im
-
-    #cast as int
-    im = im.astype(np.int16)
-
-    if(display):
-        plt.imshow(im,cmap="gray")
-        plt.axis('off')
-        plt.show
-
-    return im
-
-
 def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
     """Binarise an image with the Otsu method."""
 
@@ -58,3 +27,39 @@ def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
         plt.show()
     
     return imBinary
+
+def distanceBasedWatershade(binaryImage: np.ndarray, display:bool = False, mainImage:any = None) -> any:
+    # Generate an initial image with two overlapping circles
+    image = binaryImage
+
+    # Now we want to separate the two objects in image
+    # Generate the markers as local maxima of the distance to the background
+    distance = ndi.distance_transform_edt(image,)
+    
+    coords = sk.feature.peak_local_max(distance, footprint=np.ones((5, 5)), labels=image)
+    mask = np.zeros(distance.shape, dtype=bool)
+    mask[tuple(coords.T)] = True
+    markers, _ = ndi.label(mask)
+    labels = sk.segmentation.watershed(-distance, markers, mask=image,  compactness=0.001)
+    
+    if display:
+        labelsColorOverlay = sk.color.label2rgb(labels)
+
+        plt.figure()
+        plt.imshow(-distance, cmap=plt.cm.gray)
+        plt.title('Distances')
+        plt.axis('off')
+        plt.show()
+
+        plt.figure()
+        if mainImage is None:
+            plt.imshow(labelsColorOverlay)
+        else:
+            plt.imshow(mainImage, cmap="gray")
+            plt.imshow(labelsColorOverlay, alpha=0.5)
+        
+        plt.axis('off')
+        plt.title('Separated objects')
+        plt.show()
+
+    return labels, markers
