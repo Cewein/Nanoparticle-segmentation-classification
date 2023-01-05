@@ -1,2 +1,2 @@
 # Nanoparticle-segmentation-classification
-A python/C++ pipepline to segment nanoparticle in a 2D image
+A python pipepline to segment nanoparticles in a 2D images
