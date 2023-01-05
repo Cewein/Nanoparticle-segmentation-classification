@@ -28,12 +28,9 @@ def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
     
     return imBinary
 
+#TODO Comment function
 def distanceBasedWatershade(binaryImage: np.ndarray, display:bool = False, mainImage:any = None) -> any:
-    # Generate an initial image with two overlapping circles
-    image = binaryImage
 
-    # Now we want to separate the two objects in image
-    # Generate the markers as local maxima of the distance to the background
     distance = ndi.distance_transform_edt(image,)
     
     coords = sk.feature.peak_local_max(distance, footprint=np.ones((5, 5)), labels=image)

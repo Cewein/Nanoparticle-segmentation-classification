@@ -1,5 +1,6 @@
 import skimage as sk
 import matplotlib.pyplot as plt
+import numpy as np
 
 def openFile(path: str, scale: int=1,invert:bool = True, display: bool=False) -> np.ndarray:
     """Open a file with skimage and change is representation to gray scale in the range 0 to 255.
