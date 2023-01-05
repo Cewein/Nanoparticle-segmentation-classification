@@ -28,16 +28,21 @@ def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
     
     return imBinary
 
-#TODO Comment function
-def distanceBasedWatershade(binaryImage: np.ndarray, display:bool = False, mainImage:any = None) -> any:
+def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainImage:any = None) -> any:
 
-    distance = ndi.distance_transform_edt(image,)
-    
-    coords = sk.feature.peak_local_max(distance, footprint=np.ones((5, 5)), labels=image)
+    # Calculate the Euclidean distance transform of the binary image
+    distance = ndi.distance_transform_edt(binaryImage)
+
+    # Identify local maxima in the distance transform image
+    coords = sk.feature.peak_local_max(distance, footprint=np.ones((5, 5)), labels=binaryImage)
+
+    # Create a mask image from the identified local maxima
     mask = np.zeros(distance.shape, dtype=bool)
     mask[tuple(coords.T)] = True
     markers, _ = ndi.label(mask)
-    labels = sk.segmentation.watershed(-distance, markers, mask=image,  compactness=0.001)
+
+    # Perform watershed segmentation on the distance transform image
+    labels = sk.segmentation.watershed(-distance, markers, mask=binaryImage,  compactness=0.001)
     
     if display:
         labelsColorOverlay = sk.color.label2rgb(labels)
