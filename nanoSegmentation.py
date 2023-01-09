@@ -7,9 +7,6 @@ import skimage as sk
 
 from scipy import ndimage as ndi
 
-import os
-
-
 def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
     """Binarise an image with the Otsu method."""
 
@@ -46,28 +43,31 @@ def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainIm
 
     # Perform watershed segmentation on the distance transform image
     labels = sk.segmentation.watershed(-distance, markers, mask=binaryImage,  compactness=0.001)
-    
+
+    fig, ax = (None, None)
     if display:
+
+        fig, (ax1, ax2) = plt.subplots(1,2,figsize=(10, 5))
+
         labelsColorOverlay = sk.color.label2rgb(labels)
 
-        plt.imshow(-distance, cmap=plt.cm.gray)
-        plt.title('Distances')
-        plt.axis('off')
-        plt.show()
+        ax1.imshow(-distance, cmap=plt.cm.gray)
+        ax1.set_title('Distances')
+        ax1.set_axis_off()
 
         if mainImage is None:
-            plt.imshow(labelsColorOverlay)
+            ax2.imshow(labelsColorOverlay)
         else:
-            plt.imshow(mainImage, cmap="gray")
-            plt.imshow(labelsColorOverlay, alpha=0.5)
+            ax2.imshow(mainImage, cmap="gray")
+            ax2.imshow(labelsColorOverlay, alpha=0.5)
         
-        plt.axis('off')
-        plt.title('Separated objects')
+        ax2.set_axis_off()
+        ax2.set_title('Separated objects')
         plt.show()
 
     return labels, markers
 
-def PreProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float = 2.5, display: bool = False) -> np.ndarray:
+def preProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float = 2.5, display: bool = False) -> np.ndarray:
 
     """Process an image to faciliate the upcoming algorithm"""
 
