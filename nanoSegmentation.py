@@ -30,6 +30,9 @@ def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
 
 def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainImage:any = None) -> any:
 
+    """Perform a distance base watershed, for more information :
+    https://www.sciencedirect.com/science/article/abs/pii/0165168494900604"""
+
     # Calculate the Euclidean distance transform of the binary image
     distance = ndi.distance_transform_edt(binaryImage)
 
@@ -47,13 +50,11 @@ def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainIm
     if display:
         labelsColorOverlay = sk.color.label2rgb(labels)
 
-        plt.figure()
         plt.imshow(-distance, cmap=plt.cm.gray)
         plt.title('Distances')
         plt.axis('off')
         plt.show()
 
-        plt.figure()
         if mainImage is None:
             plt.imshow(labelsColorOverlay)
         else:
@@ -65,3 +66,28 @@ def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainIm
         plt.show()
 
     return labels, markers
+
+def PreProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float = 2.5, display: bool = False) -> np.ndarray:
+
+    """Process an image to faciliate the upcoming algorithm"""
+
+    #Perform histogram equalisation
+    imTemp = sk.exposure.equalize_adapthist(img)
+
+    if(display):
+        _ = plt.hist(imTemp.flatten(),bins=16)
+        plt.show()
+
+        plt.figure()
+        plt.imshow(imTemp, cmap="gray")
+        plt.show()
+
+    #Perform a opening on the image to 
+    imTemp = sk.morphology.opening(imTemp,footprint=sk.morphology.square(structuringElementSize))
+    imTemp = sk.filters.gaussian(imTemp, sigma=sigma)
+
+    if(display):
+        plt.imshow(imTemp, cmap="gray")
+        plt.show()
+    
+    return imTemp
