@@ -36,11 +36,11 @@ def getBoundingBox(img: np.ndarray, label: np.ndarray, sizeThreshold:int = 500, 
 
     return bondingBoxArray
 
-def exctractParticle(img: np.ndarray, bondingBoxArray: list, save:bool = False, display: bool = False):
+def exctractParticle(img: np.ndarray, bondingBoxArray: list, pictureName: str, save:bool = False, display: bool = False):
     "save a sub image into a folder, can be displayed"
 
-    if(save and not os.path.isdir('out')):
-        os.makedirs('out')
+    if(save and not os.path.isdir(f'out/{pictureName}/')):
+        os.makedirs(f'out/{pictureName}/')
 
 
     for i in range(len(bondingBoxArray)):

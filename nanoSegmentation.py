@@ -72,7 +72,7 @@ def preProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float =
     """Process an image to faciliate the upcoming algorithm"""
 
     #Perform histogram equalisation
-    imTemp = sk.exposure.equalize_adapthist(img)
+    #imTemp = sk.exposure.equalize_adapthist(img)
 
     if(display):
         _ = plt.hist(imTemp.flatten(),bins=16)
