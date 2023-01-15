@@ -62,4 +62,4 @@ def exctractParticle(img: np.ndarray, bondingBoxArray: list, pictureName: str, s
             plt.show()
 
         if(save):
-            plt.imsave(f"out/output-{i}.png",subimg, cmap="gray")
+            plt.imsave(f"out/{pictureName}/output-{i}.png",subimg, cmap="gray")
