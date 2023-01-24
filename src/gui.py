@@ -31,7 +31,8 @@ def display():
     dpg.set_viewport_resize_callback(resizeCallback)
 
     #draw the GUI
-    with dpg.window(label="NaSe", tag="main_winow", width=dpg.get_viewport_width(),height=dpg.get_viewport_height()):
+    with dpg.window(label="NaSe", tag="main_winow", width=dpg.get_viewport_width(),height=dpg.get_viewport_height(),
+            no_close=True, no_scrollbar=True, no_resize=True, no_collapse=True, no_title_bar=True):
         layout()
         
 
@@ -46,8 +47,11 @@ def layout():
     height = dpg.get_item_height("main_winow")*0.95
     width = dpg.get_item_width("main_winow")*0.95
 
+    with dpg.menu_bar():
+        with dpg.menu(label="Menu"):
+            pass
 
-    with dpg.table(tag="sub_table", header_row=False, borders_innerH=False, 
+    with dpg.table(tag="sub_table", header_row=False, borders_innerH=False,
                 borders_outerH=False, borders_innerV=False, borders_outerV=False,height=height*0.8,resizable=True):
                     
         dpg.add_table_column(init_width_or_weight=0.15)
@@ -55,23 +59,23 @@ def layout():
         dpg.add_table_column(init_width_or_weight=0.25)
 
         with dpg.table_row():
-            with dpg.child_window(tag="sub_windows_left", autosize_x=True, height=height*0.8):
+            with dpg.child_window(tag="sub_windows_left", autosize_x=True, height=height*0.8,border=False):
                 with dpg.tree_node(label="Nav 1"):
                     dpg.add_button(label="Button 1")
                 with dpg.tree_node(label="Nav 2"):
                     dpg.add_button(label="Button 2")
                 with dpg.tree_node(label="Nav 3"):
                     dpg.add_button(label="Button 3")
-            with dpg.child_window(tag="sub_windows_center", autosize_x=True, height=height*0.8):
+            with dpg.child_window(tag="sub_windows_center", autosize_x=True, height=height*0.8,border=False):
                 dpg.add_button(label="Button 1")
                 dpg.add_button(label="Button 2")
                 dpg.add_button(label="Button 3")
-            with dpg.child_window(tag="sub_windows_right", autosize_x=True, height=height*0.8):
+            with dpg.child_window(tag="sub_windows_right", autosize_x=True, height=height*0.8,border=False):
                 dpg.add_button(label="B1", width=25, height=25)
                 dpg.add_button(label="B2", width=25, height=25)
                 dpg.add_button(label="B3", width=25, height=25)
-                
-    with dpg.child_window(autosize_x=True, autosize_y=True):
+    dpg.add_separator()
+    with dpg.child_window(autosize_x=True, autosize_y=True,border=False):
         with dpg.group(horizontal=True):
             dpg.add_button(label="Header 1")
             dpg.add_button(label="Header 2")
