@@ -7,6 +7,9 @@ import skimage as sk
 
 from scipy import ndimage as ndi
 
+from ipywidgets import interact, interactive, fixed, interact_manual
+import ipywidgets as widgets
+
 def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
     """Binarise an image with the Otsu method."""
 
@@ -74,20 +77,28 @@ def preProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float =
     #Perform histogram equalisation
     imTemp = sk.exposure.equalize_adapthist(img)
 
+    fig, ax = (None, None)
+
     if(display):
-        _ = plt.hist(imTemp.flatten(),bins=16)
-        plt.show()
 
-        plt.figure()
-        plt.imshow(imTemp, cmap="gray")
-        plt.show()
+        fig, (ax1, ax2, ax3) = plt.subplots(1,3,figsize=(15, 5))
 
-    #Perform a opening on the image to 
-    imTemp = sk.morphology.opening(imTemp,footprint=sk.morphology.square(structuringElementSize))
+
+        ax1.hist(imTemp.flatten(),bins=16)
+        ax1.set_title('Histogram')
+
+        ax2.imshow(imTemp, cmap="gray")
+        ax2.set_axis_off()
+        ax2.set_title('equalised exposure')
+
+    #Perform a opening on the image
     imTemp = sk.filters.gaussian(imTemp, sigma=sigma)
+    imTemp = sk.morphology.opening(imTemp,footprint=sk.morphology.square(structuringElementSize))
 
     if(display):
-        plt.imshow(imTemp, cmap="gray")
+        ax3.imshow(imTemp, cmap="gray")
+        ax3.set_axis_off()
+        ax3.set_title('Gaussian + opening')
         plt.show()
     
     return imTemp
