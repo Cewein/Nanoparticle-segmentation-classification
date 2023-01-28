@@ -2,6 +2,9 @@ import skimage as sk
 import matplotlib.pyplot as plt
 import numpy as np
 
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
+
 def openFile(path: str, scale: int=1,invert:bool = True, display: bool=False) -> np.ndarray:
     """Open a file with skimage and change is representation to gray scale in the range 0 to 255.
     Please note that the inversion of the image is done by default.
@@ -31,3 +34,9 @@ def openFile(path: str, scale: int=1,invert:bool = True, display: bool=False) ->
         plt.show
 
     return im
+
+def fileDialogue():
+    Tk().withdraw() # we don't want a full GUI, so keep the root window from appearing
+    filename = askopenfilename()
+    print(filename)
+    return filename

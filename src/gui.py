@@ -3,6 +3,7 @@
 # Import need to run the GUI
 
 import dearpygui.dearpygui as dpg
+import src.utils
 
 def resizeCallback():
 
@@ -47,10 +48,12 @@ def layout():
     height = dpg.get_item_height("main_winow")*0.95
     width = dpg.get_item_width("main_winow")*0.95
 
+    #display meny
     with dpg.menu_bar():
         with dpg.menu(label="Menu"):
-            pass
-
+            dpg.add_button(tag="file_selector", label="Open File", callback=src.utils.fileDialogue)
+    
+    #create a table for the 3 sub windows on top
     with dpg.table(tag="sub_table", header_row=False, borders_innerH=False,
                 borders_outerH=False, borders_innerV=False, borders_outerV=False,height=height*0.8,resizable=True):
                     
@@ -74,6 +77,8 @@ def layout():
                 dpg.add_button(label="B1", width=25, height=25)
                 dpg.add_button(label="B2", width=25, height=25)
                 dpg.add_button(label="B3", width=25, height=25)
+
+    #bottom window
     dpg.add_separator()
     with dpg.child_window(autosize_x=True, autosize_y=True,border=False):
         with dpg.group(horizontal=True):
