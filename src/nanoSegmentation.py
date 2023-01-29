@@ -10,7 +10,7 @@ from scipy import ndimage as ndi
 from ipywidgets import interact, interactive, fixed, interact_manual
 import ipywidgets as widgets
 
-def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
+def thresholdOtsu(img: np.ndarray) -> any:
     """Binarise an image with the Otsu method."""
 
     #get the threshold
@@ -19,19 +19,13 @@ def thresholdOtsu(img: np.ndarray, display:bool=False) -> np.ndarray:
     #apply the thresold
     imBinary = img >= thresholds
 
-    #display the threshold image
-    if(display):
-        plt.imshow(imBinary,cmap="gray")
-        plt.title(f"{thresholds}")
-        plt.axis('off')
-        plt.show()
-    
-    return imBinary
+    return imBinary,thresholds
 
-def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainImage:any = None) -> any:
+def distanceBasedWatershed(img: np.ndarray, display:bool = False) -> any:
 
     """Perform a distance base watershed, for more information :
     https://www.sciencedirect.com/science/article/abs/pii/0165168494900604"""
+    binaryImage,thresholds = thresholdOtsu(img)
 
     # Calculate the Euclidean distance transform of the binary image
     distance = ndi.distance_transform_edt(binaryImage)
@@ -50,22 +44,22 @@ def distanceBasedWatershed(binaryImage: np.ndarray, display:bool = False, mainIm
     fig, ax = (None, None)
     if display:
 
-        fig, (ax1, ax2) = plt.subplots(1,2,figsize=(10, 5))
+        fig, (ax1, ax2,ax3) = plt.subplots(1,3,figsize=(15, 5))
 
         labelsColorOverlay = sk.color.label2rgb(labels)
 
-        ax1.imshow(-distance, cmap=plt.cm.gray)
-        ax1.set_title('Distances')
+        ax1.imshow(binaryImage, cmap=plt.cm.gray)
+        ax1.set_title(f"thresholds: {thresholds:.2f}")
         ax1.set_axis_off()
 
-        if mainImage is None:
-            ax2.imshow(labelsColorOverlay)
-        else:
-            ax2.imshow(mainImage, cmap="gray")
-            ax2.imshow(labelsColorOverlay, alpha=0.5)
-        
+        ax2.imshow(-distance, cmap=plt.cm.gray)
+        ax2.set_title('Distances')
         ax2.set_axis_off()
-        ax2.set_title('Separated objects')
+
+        ax3.imshow(labelsColorOverlay)
+        ax3.set_axis_off()
+        ax3.set_title('Separated objects')
+
         plt.show()
 
     return labels, markers

@@ -19,7 +19,7 @@ def getBoundingBox(img: np.ndarray, label: np.ndarray, sizeThreshold:int = 500, 
 
     for region in sk.measure.regionprops(label):
         # take regions with large enough areas
-        if region.area >= sizeThreshold:
+        if np.int_(region.area) >= sizeThreshold:
             # draw rectangle around segmented coins
             bondingBoxArray.append(region.bbox)
 
