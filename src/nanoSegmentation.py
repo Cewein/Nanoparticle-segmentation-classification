@@ -7,8 +7,6 @@ import skimage as sk
 
 from scipy import ndimage as ndi
 
-from ipywidgets import interact, interactive, fixed, interact_manual
-import ipywidgets as widgets
 
 def thresholdOtsu(img: np.ndarray) -> any:
     """Binarise an image with the Otsu method."""
@@ -87,7 +85,8 @@ def preProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float =
 
     #Perform a opening on the image
     imTemp = sk.filters.gaussian(imTemp, sigma=sigma)
-    imTemp = sk.morphology.opening(imTemp,footprint=sk.morphology.square(structuringElementSize))
+
+    imTemp = sk.morphology.opening(imTemp,footprint=sk.morphology.disk(structuringElementSize))
 
     if(display):
         ax3.imshow(imTemp, cmap="gray")
@@ -96,3 +95,48 @@ def preProcessing(img: np.ndarray, structuringElementSize:int = 7, sigma:float =
         plt.show()
     
     return imTemp
+
+def mergeLabel(img: np.ndarray,labels: np.ndarray, display:bool = False)-> np.ndarray: 
+    """constructs a Region Adjacency Graph (RAG) and progressively merges regions that are similar in color.\n
+    Merging two adjacent regions produces a new region with all the pixels from the merged regions.\n
+    Regions are merged until no highly similar region pairs remain.\n
+    more info : https://scikit-image.org/docs/stable/auto_examples/segmentation/plot_rag_merge.html#sphx-glr-auto-examples-segmentation-plot-rag-merge-py"""
+
+    def _weight_mean_color(graph, src, dst, n):
+        
+        diff = graph.nodes[dst]['mean color'] - graph.nodes[n]['mean color']
+        diff = np.linalg.norm(diff)
+        return {'weight': diff}
+
+
+    def merge_mean_color(graph, src, dst):
+        
+        graph.nodes[dst]['total color'] += graph.nodes[src]['total color']
+        graph.nodes[dst]['pixel count'] += graph.nodes[src]['pixel count']
+        graph.nodes[dst]['mean color'] = (graph.nodes[dst]['total color'] /
+                                        graph.nodes[dst]['pixel count'])
+
+
+    g = sk.future.graph.rag_mean_color(img, labels)
+    newLabels = sk.future.graph.merge_hierarchical(labels, g, thresh=100, rag_copy=False, in_place_merge=True, merge_func=merge_mean_color, weight_func=_weight_mean_color)
+
+    fig, ax = (None, None)
+    if display:
+
+        fig, (ax1, ax2) = plt.subplots(1,2,figsize=(10, 5))
+
+        labelsColorOverlay = sk.color.label2rgb(labels)
+        newLabelsColorOverlay = sk.color.label2rgb(newLabels)
+
+        ax1.imshow(labelsColorOverlay)
+        ax1.set_axis_off()
+        ax1.set_title("Old label")
+
+        ax2.imshow(newLabelsColorOverlay)
+        ax2.set_axis_off()
+        ax2.set_title("Merged label")
+
+        plt.show()
+
+
+    return newLabels
